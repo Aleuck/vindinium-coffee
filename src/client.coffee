@@ -1,15 +1,3 @@
-# var http = require('http');
-
-# var Client = (function () {
-#   function Client(key, mode, n_turns, server, open_browser) {
-#       this.key = key,
-#       this.mode = mode || 'training';
-#       this.mode = n_turns != null ? n_turns : 300;
-#       this.server = server != null ? server : 'http://vindinium.org';
-#   }
-#   return Client;
-# })
-
 request = require 'request';
 
 class Client
@@ -46,7 +34,6 @@ class Client
   __move: (action) ->
     # Sends a movement command to the server.
     request.post { url: @__play_url, form: { dir: action } }, @__on_move
-
 
   # Event handler methods (should be binded with ´=>´) 
 
@@ -93,8 +80,3 @@ class Client
     @__move action
 
 module.exports = Client
-# END Client
-
-
-# main if directly called
-
