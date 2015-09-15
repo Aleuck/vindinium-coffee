@@ -239,5 +239,16 @@ console.log game.board.toString()
 astar = new AStar(game.board)
 path = astar.find(game.heroes[0].pos, game.heroes[1].pos)
 
+space = "  "
+symbol = "++"
+grid = []
+for x in [0...game.board.size] by 1
+  grid[x] = []
+  for y in [0...game.board.size] by 1
+    grid[x][y] = space
+
 for pos in path
-  console.log("(#{pos.x}, #{pos.y})")
+  grid[pos.y][pos.x] = symbol
+
+for line in grid
+  console.log(line.join '')

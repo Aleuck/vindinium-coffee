@@ -6,14 +6,14 @@ DIR_NEIGHBORS = [
 	{ x: -1, y:  0 };
 ]
 
-searchHeap = (heap, pos) ->
+searchNode = (heap, pos) ->
 	for i in [0...heap.length]
 		p = heap[i];
 		if p.x == pos.x and p.y == pos.y
 			return i;
 	return false
 
-manhattanDistance = (p1, p2) -> Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y)
+manhattanDistance = (p1, p2) -> (Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y))
 
 
 compareNodes = (e1, e2) -> e1.f - e2.f
@@ -25,10 +25,10 @@ insert = (array, element, funCmp) ->
 	while first < last
 		selected = Math.floor(Math.random() * (last - first)) + first;
 		cmp = funCmp(element, array[selected])
-		if cmp > 0
+		if cmp < 0
 			first = selected + 1
 			selected = first
-		if cmp < 0
+		if cmp > 0
 			last = selected
 		if cmp == 0
 			first = selected
@@ -72,20 +72,26 @@ class AStar
 			for dir in DIR_NEIGHBORS
 				x = current.x + dir.x
 				y = current.y + dir.y
+				selected = { x:x, y:y }
 				continue if not @_checkBoundaries(x,y)
-				selected = { x:x, y:y, type: board.tiles[x][y].type }
 				continue if board.tiles[x][y].type in @obstacles
-				continue if searchHeap(closed, selected) != false
-				selected.g = current.g + 1
+				continue if searchNode(closed, selected) != false
+				selected.g = current.g + costMove
 				selected.h = h(selected, target)
 				selected.f = selected.g + selected.h
 				selected.parent = current
-				item = searchHeap(open, selected)
+				# find the index of current node already existing in open list, if any
+				item = searchNode(open, selected)
 				if item == false
+					# insert new node into open list
 					insert(open, selected, compareNodes)
 				else
-					if open[item].g > selected.g
+					# node already in the list
+					# check if the value is better
+					if open[item].f > selected.f
+						# remove old node from open list
 						open.splice(item, 1)
+						# insert new node into open list
 						insert(open, selected, compareNodes)
 		# build path
 		path = [current]
