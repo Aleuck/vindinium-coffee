@@ -51,6 +51,8 @@ class Game
             @board.tiles[x][y] = hero
           when ' '
             @board.tiles[x][y] = @empty
+    for hero in @heroes
+      @board.tiles[hero.spawnPos.x][hero.spawnPos.y].spawnPoint = true;
 class Board
   constructor: (boardSize) ->
     @size = boardSize

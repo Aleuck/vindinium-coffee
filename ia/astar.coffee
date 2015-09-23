@@ -42,7 +42,7 @@ class AStar
 		@board = board
 		@h = h || manhattanDistance
 		@costMove = 1
-		@costAvoid = 1
+		@costAvoid = 4
 		@obstacles = ['mine', 'wall', 'tavern']
 	_cmp: (a, b) -> a.f - b.f
 	find: (source, target) ->
@@ -76,7 +76,12 @@ class AStar
 				continue if not @_checkBoundaries(x,y)
 				continue if board.tiles[x][y].type in @obstacles
 				continue if searchNode(closed, selected) != false
-				selected.g = current.g + costMove
+
+				if board.tiles[x][y].spawnPoint
+					selected.g = current.g + costAvoid
+				else
+					selected.g = current.g + costMove
+
 				selected.h = h(selected, target)
 				selected.f = selected.g + selected.h
 				selected.parent = current
