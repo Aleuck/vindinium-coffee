@@ -1,4 +1,4 @@
-Directions = {
+directions = {
   'Stay':  0,
   'North': 1,
   'South': 2,
@@ -20,13 +20,29 @@ class Game
     @board = new Board game.board.size
     @wall = new Wall
     @empty = new Empty
+    @generate game
     @update game
   turn: 0
   maxTurns: 0
   finished: false
   update: (gameSrc) ->
     tiles = gameSrc.board.tiles
-    @heroes = new Hero(hero) for hero in gameSrc.heroes
+    for mine in @mines
+      objStr = tiles.substr (2 * mine.pos.x + 2 * @board.size * mine.pos.y), 2
+      holder = parseInt(objStr[1])
+      holder = 0 if isNaN(holder)
+      mine.holder = holder;
+    for hero in @heroes
+      @board.tiles[hero.pos.x][hero.pos.y] = @empty
+    for heroSrc in gameSrc.heroes
+      idx = heroSrc.id - 1
+      hero = @heroes[idx]
+      hero.update(heroSrc)
+      @board.tiles[hero.pos.x][hero.pos.y] = hero
+      @board.tiles[hero.spawnPos.x][hero.spawnPos.y].spawnPoint = true;
+  generate: (gameSrc) ->
+    tiles = gameSrc.board.tiles
+    #@heroes = new Hero(hero) for hero in gameSrc.heroes
     for y in [0 ... @board.size] by 1
       for x in [0 ... @board.size] by 1
         objStr = tiles.substr (2 * x + 2 * @board.size * y), 2
@@ -38,21 +54,16 @@ class Game
             @board.tiles[x][y] = tavern
             @taverns.push tavern
           when '$'
-            holder = parseInt(objStr[1]) - 1
-            holder = 0 if isNaN(holder)
-            mine = new Mine(x, y, holder)
+            mine = new Mine(x, y, 0)
             @board.tiles[x][y] = mine
             @mines.push mine
           when '@'
-            @board.tiles[x][y] = @empty
             heroIdx = parseInt(objStr[1]) - 1
             hero = new Hero(gameSrc.heroes[heroIdx])
             @heroes[heroIdx] = hero
             @board.tiles[x][y] = hero
           when ' '
-            @board.tiles[x][y] = @empty
-    for hero in @heroes
-      @board.tiles[hero.spawnPos.x][hero.spawnPos.y].spawnPoint = true;
+            @board.tiles[x][y] = Object.create(@empty)
 class Board
   constructor: (boardSize) ->
     @size = boardSize
@@ -81,6 +92,14 @@ class Hero
     @spawnPos = { x: hero.spawnPos.y, y: hero.spawnPos.x }
     @crashed = hero.crashed
     @lastDir = hero.lastDir
+  update: (hero) ->
+    @elo = hero.elo
+    @life = hero.life
+    @gold = hero.gold
+    @mineCount = hero.mineCount
+    @pos = { x: hero.pos.y, y: hero.pos.x }
+    @crashed = hero.crashed
+    @lastDir = hero.lastDir
   type: 'hero'
   id: 0
   name: "Hero"
@@ -96,7 +115,7 @@ class Mine
   type: 'mine'
   holder: null
   pos: null
-  toString: -> '$'+ (@holder | '-')
+  toString: -> '$'+ (@holder || '-')
 
 class Empty
   type: 'empty'
@@ -119,4 +138,5 @@ module.exports = {
   Hero: Hero,
   Mine: Mine,
   Wall: Wall,
+  directions: directions
 }
