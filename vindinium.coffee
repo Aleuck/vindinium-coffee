@@ -20,7 +20,7 @@ class Game
     @board = new Board game.board.size
     @wall = new Wall
     @empty = new Empty
-    @generate game
+    @_generate game
     @update game
   turn: 0
   maxTurns: 0
@@ -33,14 +33,15 @@ class Game
       holder = 0 if isNaN(holder)
       mine.holder = holder;
     for hero in @heroes
-      @board.tiles[hero.pos.x][hero.pos.y] = @empty
+      @board.tiles[hero.pos.x][hero.pos.y] = Object.create(@empty)
     for heroSrc in gameSrc.heroes
       idx = heroSrc.id - 1
       hero = @heroes[idx]
       hero.update(heroSrc)
       @board.tiles[hero.pos.x][hero.pos.y] = hero
       @board.tiles[hero.spawnPos.x][hero.spawnPos.y].spawnPoint = true;
-  generate: (gameSrc) ->
+  _generate: (gameSrc) ->
+    # reads the map from scratch
     tiles = gameSrc.board.tiles
     #@heroes = new Hero(hero) for hero in gameSrc.heroes
     for y in [0 ... @board.size] by 1
@@ -64,6 +65,7 @@ class Game
             @board.tiles[x][y] = hero
           when ' '
             @board.tiles[x][y] = Object.create(@empty)
+    @hero = @heroes[gameSrc.hero.id - 1];
 class Board
   constructor: (boardSize) ->
     @size = boardSize

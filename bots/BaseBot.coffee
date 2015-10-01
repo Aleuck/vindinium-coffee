@@ -6,6 +6,7 @@ class BaseBot extends RawBot
     # Wrapper to start method.
     @id = state.hero.id
     @state = new vi.Game(state)
+    hero = @state.heroes[@id-1]
     @start()
   _move: (state, callback) ->
     # Wrapper to move method.
