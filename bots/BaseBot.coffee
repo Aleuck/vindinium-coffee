@@ -1,12 +1,12 @@
 RawBot = require './RawBot'
-vi = require '../vindinium.coffe'
+vi = require '../vindinium'
 
 class BaseBot extends RawBot
   _start: (state) ->
     # Wrapper to start method.
     @id = state.hero.id
     @state = new vi.Game(state)
-    hero = @state.heroes[@id-1]
+    @hero = @state.hero
     @start()
   _move: (state, callback) ->
     # Wrapper to move method.

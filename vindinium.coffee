@@ -12,20 +12,21 @@ directions = {
 }
 
 class Game
-  constructor: (game) ->
-    @id = game.id
+  constructor: (state) ->
+    @id = state.game.id
     @heroes = []
     @taverns = []
     @mines = []
-    @board = new Board game.board.size
+    @board = new Board state.game.board.size
     @wall = new Wall
     @empty = new Empty
-    @_generate game
-    @update game
+    @_generate state
+    @update state
   turn: 0
   maxTurns: 0
   finished: false
-  update: (gameSrc) ->
+  update: (state) ->
+    gameSrc = state.game
     tiles = gameSrc.board.tiles
     for mine in @mines
       objStr = tiles.substr (2 * mine.pos.x + 2 * @board.size * mine.pos.y), 2
@@ -40,7 +41,8 @@ class Game
       hero.update(heroSrc)
       @board.tiles[hero.pos.x][hero.pos.y] = hero
       @board.tiles[hero.spawnPos.x][hero.spawnPos.y].spawnPoint = true;
-  _generate: (gameSrc) ->
+  _generate: (state) ->
+    gameSrc = state.game
     # reads the map from scratch
     tiles = gameSrc.board.tiles
     #@heroes = new Hero(hero) for hero in gameSrc.heroes
@@ -65,7 +67,7 @@ class Game
             @board.tiles[x][y] = hero
           when ' '
             @board.tiles[x][y] = Object.create(@empty)
-    @hero = @heroes[gameSrc.hero.id - 1];
+    @hero = @heroes[state.hero.id - 1];
 class Board
   constructor: (boardSize) ->
     @size = boardSize
@@ -75,9 +77,9 @@ class Board
   tiles: null
   toString: -> 
     string = ''
-    for y in [0 .. @size - 1] by 1
+    for y in [0 ... @size] by 1
       string += '\n'
-      for x in [0 .. @size - 1] by 1
+      for x in [0 ... @size] by 1
         string += @tiles[x][y].toString()
     string
 
