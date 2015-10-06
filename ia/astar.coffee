@@ -43,7 +43,7 @@ class AStar
 		@h = h || manhattanDistance
 		@costMove = 1
 		@costAvoid = 4
-		@obstacles = ['mine', 'wall', 'tavern']
+		@obstacles = ['mine', 'wall', 'tavern', 'hero']
 	_cmp: (a, b) -> a.f - b.f
 	find: (source, target) ->
 		h = @h
@@ -108,5 +108,27 @@ class AStar
 	_checkBoundaries: (x, y) ->
 		return false if x < 0 or x >= @board.size or y < 0 or y >= @board.size
 		return true
+
+AStar.manhattanDistance = manhattanDistance
+AStar.pathToDir = (path, target) ->
+	lastIdx = path.length - 1
+	if lastIdx < 1
+		current = path[0]
+		if target
+			next = target
+		else
+			return "Stay"
+	else
+		current = path[lastIdx]
+		next = path[lastIdx - 1]
+	if current.y < next.y
+		return "South"
+	if current.y > next.y
+		return "North"
+	if current.x < next.x
+		return "East"
+	if current.x > next.x
+		return "West"
+	return "Stay"
 
 module.exports = AStar
