@@ -8,7 +8,7 @@ class Client
     @server = options.server or 'http://vindinium.org'
     @open_browser = options.open_browser or false
     @timeout_move = 15
-    @timeout_connection = 100 * 60
+    @timeout_connection = 1000 * 60
     @__bot = null
     @__play_url = null
   run: (bot) ->
