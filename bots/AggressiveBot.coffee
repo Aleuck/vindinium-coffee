@@ -21,7 +21,7 @@ class AggressiveBot extends BaseBot
 		target = null
 		for hero in @state.heroes
 			continue if hero.id == @id
-			if target is null or hero.mineCount > target.mineCount
+			if target is null or (hero.mineCount > target.mineCount and hero.life >= target.life)
 				target = hero
 		return target
 
